@@ -5,24 +5,21 @@ import model.Conseiller;
 import model.Contrat;
 import model.Sinistre;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class InMemoryDataStore {
-    private static final Map<Long, Client> CLIENTS = new ConcurrentHashMap<>();
-    private static final Map<Long, Conseiller> CONSEILLERS = new ConcurrentHashMap<>();
-    private static final Map<Long, Contrat> CONTRATS = new ConcurrentHashMap<>();
-    private static final Map<Long, Sinistre> SINISTRES = new ConcurrentHashMap<>();
+    public static final Map<Long, Client> CLIENTS = new ConcurrentHashMap<>();
+    public static final Map<Long, Conseiller> CONSEILLERS = new ConcurrentHashMap<>();
+    public static final Map<Long, Contrat> CONTRATS = new ConcurrentHashMap<>();
+    public static final Map<Long, Sinistre> SINISTRES = new ConcurrentHashMap<>();
 
     public InMemoryDataStore() {
 
     }
 
-    public static List<Client> findClientByNom(String nom) {
+    public static List<Client> findClientsByNom(String nom) {
         return CLIENTS.values().stream()
                 .filter(c -> c.getNom().equalsIgnoreCase(nom))
                 .sorted(Comparator.comparing(Client::getNom))
@@ -43,7 +40,8 @@ public class InMemoryDataStore {
     }
 
     public static List<Sinistre> findSinistresByClientId(Long clientId) {
-
+        Set<Long> contrats = CONTRATS.values().stream().filter(c-> Objects.equals(c.getClientId(), clientId)).map(Contrat::getId).collect(Collectors.toSet());
+        return SINISTRES.values().stream().filter(s -> contrats.contains(s.getContratId())).collect(Collectors.toList());
     }
 
 }
