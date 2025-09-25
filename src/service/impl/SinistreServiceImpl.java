@@ -28,7 +28,7 @@ public class SinistreServiceImpl implements SinistreService {
 
 
     @Override
-    public boolean delete(Long id) { return dao.deleteById(id); }
+    public boolean deleteById(Long id) { return dao.deleteById(id); }
 
 
     @Override

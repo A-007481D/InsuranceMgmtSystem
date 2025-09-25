@@ -13,7 +13,7 @@ public interface SinistreService {
     Sinistre create(Sinistre s);
     Optional<Sinistre> findById(Long id);
     List<Sinistre> findAll();
-    boolean delete(Long id);
+    boolean deleteById(Long id);
     List<Sinistre> findByContratId(Long contratId);
     List<Sinistre> findByClientId(Long clientId);
     Double totalCoutByClient(Long clientId);
