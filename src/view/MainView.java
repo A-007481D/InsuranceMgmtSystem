@@ -23,10 +23,10 @@ public class MainView {
             System.out.print("Choix: ");
             String choice = SC.nextLine();
             switch (choice) {
-//                case "1": showConseillerMenu(); break;
-//                case "2": showClientMenu(); break;
-//                case "3": showContratMenu(); break;
-//                case "4": showSinistreMenu(); break;
+                case "1": showConseillerMenu(); break;
+                case "2": showClientMenu(); break;
+                case "3": showContratMenu(); break;
+                case "4": showSinistreMenu(); break;
                 case "0": System.out.println("Au revoir"); return;
                 default: System.out.println("Choix invalide");
             }
