@@ -18,7 +18,7 @@ public class SinistreDAOImpl implements SinistreDAO {
     public Sinistre save(Sinistre s) {
         if (s == null) throw new IllegalArgumentException("Sinistre is null");
         if (s.getId() == null) {
-            String sql = "INSERT INTO sinistres (type_sinistre, date_time, cout, description, contrat_id) VALUES (?, ?, ?, ?, ?) RETURNING id";
+            String sql = "INSERT INTO sinistres (type_sinistre, date_declaration, cout, description, contrat_id) VALUES (?, ?, ?, ?, ?) RETURNING id";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, s.getTypeSinistre().name());
                 ps.setTimestamp(2, Timestamp.valueOf(s.getDateTime()));
@@ -40,7 +40,7 @@ public class SinistreDAOImpl implements SinistreDAO {
                 throw new RuntimeException("Failed to insert sinistre", e);
             }
         } else {
-            String sql = "UPDATE sinistres SET type_sinistre=?, date_time=?, cout=?, description=?, contrat_id=? WHERE id=?";
+            String sql = "UPDATE sinistres SET type_sinistre=?, date_declaration=?, cout=?, description=?, contrat_id=? WHERE id=?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, s.getTypeSinistre().name());
                 ps.setTimestamp(2, Timestamp.valueOf(s.getDateTime()));
@@ -135,7 +135,7 @@ public class SinistreDAOImpl implements SinistreDAO {
 
     @Override
     public List<Sinistre> findBefore(java.time.LocalDateTime dateTime) {
-        String sql = "SELECT * FROM sinistres WHERE date_time < ?";
+        String sql = "SELECT * FROM sinistres WHERE date_declaration < ?";
         List<Sinistre> list = new ArrayList<>();
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setTimestamp(1, Timestamp.valueOf(dateTime));
@@ -169,7 +169,7 @@ public class SinistreDAOImpl implements SinistreDAO {
         return new Sinistre(
                 rs.getLong("id"),
                 TypeSinistre.valueOf(rs.getString("type_sinistre")),
-                rs.getTimestamp("date_time").toLocalDateTime(),
+                rs.getTimestamp("date_declaration").toLocalDateTime(),
                 rs.getBigDecimal("cout").doubleValue(),
                 rs.getString("description"),
                 rs.getLong("contrat_id")

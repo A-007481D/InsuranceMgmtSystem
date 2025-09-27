@@ -61,7 +61,7 @@ public class SinistreView {
         System.out.print("Contrat ID: ");
         Long contratId = Long.parseLong(SC.nextLine());
 
-        Sinistre s = new Sinistre(IDGenerator.next(), type, date.atStartOfDay(), cout, desc, contratId);
+        Sinistre s = new Sinistre(null, type, date.atStartOfDay(), cout, desc, contratId);
         controller.create(s);
         System.out.println("Sinistre créé: " + s);
     }

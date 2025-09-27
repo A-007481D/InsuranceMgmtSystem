@@ -21,7 +21,6 @@ public class ConseillerDAOImpl implements ConseillerDAO {
     public Conseiller save(Conseiller conseiller) {
         try {
             if (conseiller.getId() == null) {
-                // INSERT
                 String sql = "INSERT INTO conseillers (nom, prenom, email) VALUES (?, ?, ?) RETURNING id";
                 try (PreparedStatement ps = conn.prepareStatement(sql)) {
                     ps.setString(1, conseiller.getNom());
@@ -33,7 +32,6 @@ public class ConseillerDAOImpl implements ConseillerDAO {
                     }
                 }
             } else {
-                // UPDATE
                 String sql = "UPDATE conseillers SET nom=?, prenom=?, email=? WHERE id=?";
                 try (PreparedStatement ps = conn.prepareStatement(sql)) {
                     ps.setString(1, conseiller.getNom());
@@ -84,8 +82,9 @@ public class ConseillerDAOImpl implements ConseillerDAO {
     @Override
     public List<Conseiller> findAll() {
         List<Conseiller> list = new ArrayList<>();
-        String sql = "SELECT * FROM conseillers";
+        String sql = "SELECT * FROM conseillers ORDER BY id";
         try (Statement st = conn.createStatement()) {
+//            System.out.println("[ConseillerDAOImpl] Executing query: " + sql);
             ResultSet rs = st.executeQuery(sql);
             while (rs.next()) {
                 Conseiller c = new Conseiller(
@@ -95,8 +94,11 @@ public class ConseillerDAOImpl implements ConseillerDAO {
                         rs.getString("email")
                 );
                 list.add(c);
+                System.out.println("Found conseiller: " + c);
             }
+            System.out.println("Total conseillers found: " + list.size());
         } catch (SQLException e) {
+            System.err.println("[ConseillerDAOImpl] Error fetching conseillers: " + e.getMessage());
             throw new RuntimeException("Error fetching conseillers", e);
         }
         return list;

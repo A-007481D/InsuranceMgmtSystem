@@ -15,7 +15,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public Client create(Client c) {
-        if (c.getNom() == null || c.getNom().trim().isEmpty()) throw new IllegalArgumentException("Nom required");
+        if (c.getNom() == null || c.getNom().trim().isEmpty()) throw new IllegalArgumentException("Nom requis");
         return dao.save(c);
     }
 
@@ -36,7 +36,6 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public List<Client> findByNomSorted(String nom) {
-        // use streams per brief
         return dao.findAll().stream()
                 .filter(c -> c.getNom() != null && c.getNom().equalsIgnoreCase(nom))
                 .sorted(Comparator.comparing(Client::getNom, String.CASE_INSENSITIVE_ORDER))

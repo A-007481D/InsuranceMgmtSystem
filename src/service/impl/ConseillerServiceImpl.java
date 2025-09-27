@@ -34,7 +34,7 @@ public class ConseillerServiceImpl implements ConseillerService {
         return dao.deleteById(id);
     }
 
-    // Additional convenience: get clients of a conseiller (service-level)
+
     public List<Client> findClientsOfConseiller(Long conseillerId) {
         return clientDao.findAll().stream()
                 .filter(cl -> conseillerId != null && conseillerId.equals(cl.getConseillerId()))

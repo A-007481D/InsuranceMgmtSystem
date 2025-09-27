@@ -12,7 +12,6 @@ public class ContratServiceImpl implements ContratService {
 
     @Override
     public Contrat create(Contrat c) {
-        // Example business rule: start < end
         if (c.getDateDebut().isAfter(c.getDateFin())) throw new IllegalArgumentException("dateDebut must be before dateFin");
         return dao.save(c);
     }

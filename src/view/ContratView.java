@@ -44,7 +44,7 @@ public class ContratView {
         System.out.print("Date Debut (YYYY-MM-DD): "); LocalDate debut = LocalDate.parse(SC.nextLine());
         System.out.print("Date Fin (YYYY-MM-DD): "); LocalDate fin = LocalDate.parse(SC.nextLine());
         System.out.print("Client ID: "); Long clientId = Long.parseLong(SC.nextLine());
-        Contrat co = new Contrat(IDGenerator.next(), type, debut, fin, clientId);
+        Contrat co = new Contrat(null, type, debut, fin, clientId);
         controller.create(co);
         System.out.println("Contrat cree: " + co);
     }

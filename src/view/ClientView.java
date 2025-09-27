@@ -42,7 +42,7 @@ public class ClientView {
         System.out.print("Prenom: "); String prenom = SC.nextLine();
         System.out.print("Email: "); String email = SC.nextLine();
         System.out.print("Conseiller ID: "); Long consId = Long.parseLong(SC.nextLine());
-        Client cl = new Client(IDGenerator.next(), nom, prenom, email, consId);
+        Client cl = new Client(null, nom, prenom, email, consId);
         controller.create(cl);
         System.out.println("Client cree: " + cl);
     }

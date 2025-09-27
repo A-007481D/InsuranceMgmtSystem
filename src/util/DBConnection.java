@@ -17,7 +17,7 @@ public final class DBConnection {
             Class.forName("org.postgresql.Driver");
             this.connection = DriverManager.getConnection(URL, USER, PASSWORD);
             this.connection.setAutoCommit(true);
-            System.out.println("[DBConnection] Connected, autoCommit=" + this.connection.getAutoCommit());
+//            System.out.println("[DBConnection] Connected, autoCommit=" + this.connection.getAutoCommit());
         } catch (SQLException e) {
             throw new RuntimeException("failed to connect", e);
         } catch (ClassNotFoundException e) {
@@ -25,7 +25,7 @@ public final class DBConnection {
         }
     }
 
-    public static synchronized DBConnection getInstance() {
+    public static DBConnection getInstance() {
         if (instance == null) {
             instance = new DBConnection();
         }

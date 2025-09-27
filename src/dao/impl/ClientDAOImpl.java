@@ -10,95 +10,72 @@ import java.util.List;
 import java.util.Optional;
 
 public class ClientDAOImpl implements ClientDAO {
-    private final Connection conn = DBConnection.getInstance().getConnection();
+    private final Connection conn;
+
+    public ClientDAOImpl() {
+        this.conn = DBConnection.getInstance().getConnection();
+    }
 
     @Override
     public Client save(Client c) {
-        if (c == null) throw new IllegalArgumentException("Client is null");
-        if (c.getId() == null) {
-            final String sql = "INSERT INTO clients (nom, prenom, email, conseiller_id) VALUES (?, ?, ?, ?) RETURNING id";
+        try {
+            String sql = "INSERT INTO clients (nom, prenom, email, conseiller_id) VALUES (?, ?, ?, ?) RETURNING id";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, c.getNom());
                 ps.setString(2, c.getPrenom());
                 ps.setString(3, c.getEmail());
                 if (c.getConseillerId() != null) ps.setLong(4, c.getConseillerId());
-                else ps.setNull(4, Types.INTEGER);
-                System.out.println("[ClientDAOImpl] Executing INSERT: " + sql);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        long id = rs.getLong("id");
-                        c.setId(id);
-                        System.out.println("[ClientDAOImpl] Inserted id=" + id);
-                    } else {
-                        throw new RuntimeException("Insert returned no id");
-                    }
+                else ps.setNull(4, Types.BIGINT);
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    c.setId(rs.getLong("id"));
+                    System.out.println("Successfully inserted new client with ID: " + c.getId());
                 }
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-                throw new RuntimeException("Failed to insert client", ex);
             }
-        } else {
-            final String sql = "UPDATE clients SET nom=?, prenom=?, email=?, conseiller_id=? WHERE id=?";
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setString(1, c.getNom());
-                ps.setString(2, c.getPrenom());
-                ps.setString(3, c.getEmail());
-                if (c.getConseillerId() != null) ps.setLong(4, c.getConseillerId());
-                else ps.setNull(4, Types.INTEGER);
-                ps.setLong(5, c.getId());
-                System.out.println("[ClientDAOImpl] Executing UPDATE: " + sql + " id=" + c.getId());
-                int updated = ps.executeUpdate();
-                System.out.println("[ClientDAOImpl] Updated rows=" + updated);
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-                throw new RuntimeException("Failed to update client", ex);
-            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error saving client", e);
         }
         return c;
     }
 
     @Override
     public Optional<Client> findById(Long id) {
-        final String sql = "SELECT id, nom, prenom, email, conseiller_id FROM clients WHERE id=?";
+        String sql = "SELECT * FROM clients WHERE id=?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return Optional.of(mapRow(rs));
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return Optional.of(mapRow(rs));
             }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            throw new RuntimeException("Failed to find client by id", ex);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         return Optional.empty();
     }
 
     @Override
     public List<Client> findAll() {
-        final String sql = "SELECT id, nom, prenom, email, conseiller_id FROM clients";
         List<Client> list = new ArrayList<>();
-        try (Statement st = conn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+        String sql = "SELECT * FROM clients";
+        try (Statement st = conn.createStatement()) {
+            ResultSet rs = st.executeQuery(sql);
             while (rs.next()) list.add(mapRow(rs));
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            throw new RuntimeException("Failed to find all clients", ex);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         return list;
     }
 
     @Override
     public boolean deleteById(Long id) {
-        final String sql = "DELETE FROM clients WHERE id=?";
+        String sql = "DELETE FROM clients WHERE id=?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, id);
-            int affected = ps.executeUpdate();
-            System.out.println("[ClientDAOImpl] Deleted rows=" + affected + " for id=" + id);
-            return affected > 0;
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            throw new RuntimeException("Failed to delete client", ex);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
-
     @Override
     public List<Client> findByNom(String nom) {
         final String sql = "SELECT id, nom, prenom, email, conseiller_id FROM clients WHERE LOWER(nom) LIKE LOWER(?)";
@@ -130,15 +107,14 @@ public class ClientDAOImpl implements ClientDAO {
         }
         return list;
     }
-
     private Client mapRow(ResultSet rs) throws SQLException {
-        Long consId = (Long) rs.getObject("conseiller_id");
+        Long conseillerId = rs.getObject("conseiller_id") != null ? rs.getLong("conseiller_id") : null;
         return new Client(
                 rs.getLong("id"),
                 rs.getString("nom"),
                 rs.getString("prenom"),
                 rs.getString("email"),
-                consId
+                conseillerId
         );
     }
 }

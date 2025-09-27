@@ -37,7 +37,7 @@ public class ConseillerView {
         System.out.print("Nom: "); String nom = SC.nextLine();
         System.out.print("Prenom: "); String prenom = SC.nextLine();
         System.out.print("Email: "); String email = SC.nextLine();
-        Conseiller c = new Conseiller(IDGenerator.next(), nom, prenom, email);
+        Conseiller c = new Conseiller(null, nom, prenom, email);
         controller.create(c);
         System.out.println("Conseiller cree: " + c);
     }
